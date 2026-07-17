@@ -1,8 +1,7 @@
-package com.matrob.urlcondenser.mapper;
+package com.matrob.urlcondenser.url;
 
-import com.matrob.urlcondenser.domain.Url;
-import com.matrob.urlcondenser.dto.UrlResponseDTO;
-import com.matrob.urlcondenser.dto.UrlStatsDTO;
+import com.matrob.urlcondenser.url.dto.UrlResponseDTO;
+import com.matrob.urlcondenser.url.dto.UrlStatsDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Value;

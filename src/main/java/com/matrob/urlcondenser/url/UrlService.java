@@ -1,13 +1,10 @@
-package com.matrob.urlcondenser.service;
+package com.matrob.urlcondenser.url;
 
-import com.matrob.urlcondenser.domain.Url;
-import com.matrob.urlcondenser.dto.UrlRequestDTO;
-import com.matrob.urlcondenser.dto.UrlResponseDTO;
-import com.matrob.urlcondenser.dto.UrlStatsDTO;
-import com.matrob.urlcondenser.exception.DuplicateUrlException;
-import com.matrob.urlcondenser.exception.UrlNotFoundException;
-import com.matrob.urlcondenser.mapper.UrlMapper;
-import com.matrob.urlcondenser.repository.UrlRepository;
+import com.matrob.urlcondenser.url.dto.UrlRequestDTO;
+import com.matrob.urlcondenser.url.dto.UrlResponseDTO;
+import com.matrob.urlcondenser.url.dto.UrlStatsDTO;
+import com.matrob.urlcondenser.infra.exception.DuplicateUrlException;
+import com.matrob.urlcondenser.infra.exception.UrlNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

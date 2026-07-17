@@ -1,8 +1,7 @@
-package com.matrob.urlcondenser.controller;
+package com.matrob.urlcondenser.usuario;
 
-import com.matrob.urlcondenser.domain.usuario.DadosAutenticacao;
-import com.matrob.urlcondenser.domain.usuario.Usuario;
-import com.matrob.urlcondenser.security.DadosTokenJWT;
+import com.matrob.urlcondenser.usuario.dto.DadosAutenticacao;
+import com.matrob.urlcondenser.usuario.dto.DadosTokenJWT;
 import com.matrob.urlcondenser.security.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

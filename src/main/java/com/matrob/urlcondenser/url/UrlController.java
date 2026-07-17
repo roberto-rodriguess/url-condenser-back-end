@@ -1,11 +1,8 @@
-package com.matrob.urlcondenser.controller;
+package com.matrob.urlcondenser.url;
 
-
-import com.matrob.urlcondenser.domain.Url;
-import com.matrob.urlcondenser.dto.UrlRequestDTO;
-import com.matrob.urlcondenser.dto.UrlResponseDTO;
-import com.matrob.urlcondenser.dto.UrlStatsDTO;
-import com.matrob.urlcondenser.service.UrlService;
+import com.matrob.urlcondenser.url.dto.UrlRequestDTO;
+import com.matrob.urlcondenser.url.dto.UrlResponseDTO;
+import com.matrob.urlcondenser.url.dto.UrlStatsDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

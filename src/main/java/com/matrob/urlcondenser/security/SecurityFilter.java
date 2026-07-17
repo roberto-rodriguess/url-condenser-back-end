@@ -1,6 +1,6 @@
 package com.matrob.urlcondenser.security;
 
-import com.matrob.urlcondenser.domain.usuario.UsuarioRepository;
+import com.matrob.urlcondenser.usuario.UsuarioRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
