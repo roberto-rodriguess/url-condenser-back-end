@@ -65,6 +65,23 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(DuplicateLoginException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateLogin(
+            DuplicateLoginException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .error("Conflict")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> validation(
             MethodArgumentNotValidException ex,
