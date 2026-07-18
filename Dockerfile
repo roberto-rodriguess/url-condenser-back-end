@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/cc-debian12
+FROM debian:bookworm-slim
 WORKDIR /app
 COPY target/urlcondenser /app/urlcondenser
 EXPOSE 8080
