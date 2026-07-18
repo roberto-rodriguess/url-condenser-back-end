@@ -1,5 +1,6 @@
 package com.matrob.urlcondenser.url;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.matrob.urlcondenser.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,6 +32,7 @@ public class Url {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
