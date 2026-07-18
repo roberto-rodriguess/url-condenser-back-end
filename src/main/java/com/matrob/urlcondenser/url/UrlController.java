@@ -3,6 +3,7 @@ package com.matrob.urlcondenser.url;
 import com.matrob.urlcondenser.url.dto.UrlRequestDTO;
 import com.matrob.urlcondenser.url.dto.UrlResponseDTO;
 import com.matrob.urlcondenser.url.dto.UrlStatsDTO;
+import com.matrob.urlcondenser.usuario.Usuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -33,9 +35,10 @@ public class UrlController {
     @Operation(summary = "Criar URL encurtada")
     @PostMapping("/api/urls")
     public ResponseEntity<UrlResponseDTO> create(
-            @Valid @RequestBody UrlRequestDTO dto) {
+            @Valid @RequestBody UrlRequestDTO dto,
+            @AuthenticationPrincipal Usuario usuario) {
 
-        UrlResponseDTO response = service.createShortUrl(dto);
+        UrlResponseDTO response = service.createShortUrl(dto, usuario);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -47,9 +50,9 @@ public class UrlController {
      */
     @Operation(summary = "Listar todas as URLs")
     @GetMapping("/api/urls")
-    public ResponseEntity<List<Url>> findAll() {
+    public ResponseEntity<List<Url>> findAll(@AuthenticationPrincipal Usuario usuario) {
 
-        return ResponseEntity.ok(service.findAll());
+        return ResponseEntity.ok(service.findAll(usuario));
 
     }
 
@@ -59,9 +62,10 @@ public class UrlController {
     @Operation(summary = "Buscar URL por ID")
     @GetMapping("/api/urls/{id}")
     public ResponseEntity<Url> findById(
-            @PathVariable Long id) {
+            @PathVariable Long id,
+            @AuthenticationPrincipal Usuario usuario) {
 
-        return ResponseEntity.ok(service.findById(id));
+        return ResponseEntity.ok(service.findById(id, usuario));
 
     }
 
@@ -71,9 +75,10 @@ public class UrlController {
     @Operation(summary = "Consultar estatísticas")
     @GetMapping("/api/urls/stats/{shortCode}")
     public ResponseEntity<UrlStatsDTO> stats(
-            @PathVariable String shortCode) {
+            @PathVariable String shortCode,
+            @AuthenticationPrincipal Usuario usuario) {
 
-        return ResponseEntity.ok(service.getStats(shortCode));
+        return ResponseEntity.ok(service.getStats(shortCode, usuario));
 
     }
 
@@ -83,9 +88,10 @@ public class UrlController {
     @Operation(summary = "Excluir URL")
     @DeleteMapping("/api/urls/{id}")
     public ResponseEntity<Void> delete(
-            @PathVariable Long id) {
+            @PathVariable Long id,
+            @AuthenticationPrincipal Usuario usuario) {
 
-        service.delete(id);
+        service.delete(id, usuario);
 
         return ResponseEntity.noContent().build();
 

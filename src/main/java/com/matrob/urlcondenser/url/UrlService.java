@@ -5,6 +5,8 @@ import com.matrob.urlcondenser.url.dto.UrlResponseDTO;
 import com.matrob.urlcondenser.url.dto.UrlStatsDTO;
 import com.matrob.urlcondenser.infra.exception.DuplicateUrlException;
 import com.matrob.urlcondenser.infra.exception.UrlNotFoundException;
+import com.matrob.urlcondenser.infra.exception.UserUrlLimitExceededException;
+import com.matrob.urlcondenser.usuario.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +27,14 @@ public class UrlService {
     /**
      * Cria uma URL encurtada.
      */
-    public UrlResponseDTO createShortUrl(UrlRequestDTO dto) {
+    public UrlResponseDTO createShortUrl(UrlRequestDTO dto, Usuario usuario) {
 
-        if (repository.existsByOriginalUrl(dto.originalUrl())) {
-            throw new DuplicateUrlException("Essa URL já foi cadastrada.");
+        if (repository.countByUsuario(usuario) >= 10) {
+            throw new UserUrlLimitExceededException("Você atingiu o limite máximo de 10 URLs.");
+        }
+
+        if (repository.existsByOriginalUrlAndUsuario(dto.originalUrl(), usuario)) {
+            throw new DuplicateUrlException("Você já cadastrou essa URL.");
         }
 
         String shortCode = generateUniqueCode();
@@ -36,6 +42,7 @@ public class UrlService {
         Url url = Url.builder()
                 .originalUrl(dto.originalUrl())
                 .shortCode(shortCode)
+                .usuario(usuario)
                 .build();
 
         repository.save(url);
@@ -44,40 +51,40 @@ public class UrlService {
     }
 
     /**
-     * Retorna todas as URLs cadastradas.
+     * Retorna todas as URLs cadastradas para o usuário logado.
      */
-    public List<Url> findAll() {
-        return repository.findAll();
+    public List<Url> findAll(Usuario usuario) {
+        return repository.findAllByUsuario(usuario);
     }
 
     /**
-     * Busca pelo ID.
+     * Busca pelo ID e pelo usuário.
      */
-    public Url findById(Long id) {
+    public Url findById(Long id, Usuario usuario) {
 
-        return repository.findById(id)
+        return repository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() ->
                         new UrlNotFoundException("URL não encontrada."));
     }
 
     /**
-     * Busca estatísticas.
+     * Busca estatísticas pelo código e usuário.
      */
-    public UrlStatsDTO getStats(String shortCode) {
+    public UrlStatsDTO getStats(String shortCode, Usuario usuario) {
 
-        Url url = repository.findByShortCode(shortCode)
+        Url url = repository.findByShortCodeAndUsuario(shortCode, usuario)
                 .orElseThrow(() ->
-                        new UrlNotFoundException("Código não encontrado."));
+                        new UrlNotFoundException("Código não encontrado ou não pertence a você."));
 
         return mapper.toStatsDTO(url);
     }
 
     /**
-     * Remove uma URL.
+     * Remove uma URL do usuário.
      */
-    public void delete(Long id) {
+    public void delete(Long id, Usuario usuario) {
 
-        Url url = findById(id);
+        Url url = findById(id, usuario);
 
         repository.delete(url);
     }
