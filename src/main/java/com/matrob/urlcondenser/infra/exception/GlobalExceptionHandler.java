@@ -48,6 +48,23 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(UserUrlLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleLimitExceeded(
+            UserUrlLimitExceededException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Limit Exceeded")
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> validation(
             MethodArgumentNotValidException ex,
