@@ -1,6 +1,4 @@
-package com.matrob.urlcondenser.repository;
-
-import com.matrob.urlcondenser.domain.Url;
+package com.matrob.urlcondenser.url;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

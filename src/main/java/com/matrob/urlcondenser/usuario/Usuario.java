@@ -1,4 +1,4 @@
-package com.matrob.urlcondenser.domain.usuario;
+package com.matrob.urlcondenser.usuario;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

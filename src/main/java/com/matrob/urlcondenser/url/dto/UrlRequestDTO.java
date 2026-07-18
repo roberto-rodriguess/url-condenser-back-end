@@ -1,4 +1,4 @@
-package com.matrob.urlcondenser.dto;
+package com.matrob.urlcondenser.url.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

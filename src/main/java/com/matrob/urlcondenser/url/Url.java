@@ -1,4 +1,4 @@
-package com.matrob.urlcondenser.domain;
+package com.matrob.urlcondenser.url;
 
 import jakarta.persistence.*;
 import lombok.*;

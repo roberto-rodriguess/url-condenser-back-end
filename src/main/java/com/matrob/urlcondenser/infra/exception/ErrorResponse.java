@@ -1,4 +1,4 @@
-package com.matrob.urlcondenser.exception;
+package com.matrob.urlcondenser.infra.exception;
 
 import lombok.Builder;
 

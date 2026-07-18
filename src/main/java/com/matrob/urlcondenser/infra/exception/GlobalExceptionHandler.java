@@ -1,4 +1,4 @@
-package com.matrob.urlcondenser.exception;
+package com.matrob.urlcondenser.infra.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

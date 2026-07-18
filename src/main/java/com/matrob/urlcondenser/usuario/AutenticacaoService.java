@@ -1,4 +1,4 @@
-package com.matrob.urlcondenser.domain.usuario;
+package com.matrob.urlcondenser.usuario;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

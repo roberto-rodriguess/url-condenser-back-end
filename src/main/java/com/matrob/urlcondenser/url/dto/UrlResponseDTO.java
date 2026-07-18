@@ -1,4 +1,4 @@
-package com.matrob.urlcondenser.dto;
+package com.matrob.urlcondenser.url.dto;
 
 public record UrlResponseDTO(
 

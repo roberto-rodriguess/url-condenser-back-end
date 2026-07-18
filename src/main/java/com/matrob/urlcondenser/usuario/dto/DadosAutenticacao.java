@@ -1,4 +1,4 @@
-package com.matrob.urlcondenser.domain.usuario;
+package com.matrob.urlcondenser.usuario.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
