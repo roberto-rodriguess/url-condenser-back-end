@@ -33,7 +33,7 @@ public class Url {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
