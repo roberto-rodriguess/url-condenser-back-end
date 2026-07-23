@@ -7,7 +7,9 @@ import com.matrob.urlcondenser.usuario.Usuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import com.matrob.urlcondenser.infra.exception.UrlNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,9 @@ import java.util.List;
 public class UrlController {
 
     private final UrlService service;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     /**
      * Cria uma URL curta.
@@ -105,10 +110,14 @@ public class UrlController {
     public ResponseEntity<Void> redirect(
             @PathVariable String shortCode) {
 
-        String url = service.redirect(shortCode);
-
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(url));
+        try {
+            String url = service.redirect(shortCode);
+            headers.setLocation(URI.create(url));
+        } catch (UrlNotFoundException ex) {
+            String redirectUrl = frontendUrl.endsWith("/") ? frontendUrl + "link-invalido.html" : frontendUrl + "/link-invalido.html";
+            headers.setLocation(URI.create(redirectUrl));
+        }
 
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
 
