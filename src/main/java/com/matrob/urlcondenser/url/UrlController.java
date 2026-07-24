@@ -1,5 +1,6 @@
 package com.matrob.urlcondenser.url;
 
+import com.matrob.urlcondenser.url.dto.UrlListResponseDTO;
 import com.matrob.urlcondenser.url.dto.UrlRequestDTO;
 import com.matrob.urlcondenser.url.dto.UrlResponseDTO;
 import com.matrob.urlcondenser.url.dto.UrlStatsDTO;
@@ -30,6 +31,10 @@ import java.util.List;
 public class UrlController {
 
     private final UrlService service;
+    private final UrlMapper mapper;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     @Value("${frontend.url}")
     private String frontendUrl;
@@ -55,10 +60,11 @@ public class UrlController {
      */
     @Operation(summary = "Listar todas as URLs")
     @GetMapping("/api/urls")
-    public ResponseEntity<List<Url>> findAll(@AuthenticationPrincipal Usuario usuario) {
-
-        return ResponseEntity.ok(service.findAll(usuario));
-
+    public ResponseEntity<List<UrlListResponseDTO>> findAll(@AuthenticationPrincipal Usuario usuario) {
+        List<UrlListResponseDTO> list = service.findAll(usuario).stream()
+                .map(mapper::toListResponseDTO)
+                .toList();
+        return ResponseEntity.ok(list);
     }
 
     /**

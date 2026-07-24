@@ -1,6 +1,8 @@
 package com.matrob.urlcondenser.usuario;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -29,8 +31,21 @@ public class Usuario implements UserDetails {
     private String login;
     private String senha;
 
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
+
+    public Usuario(Long id, String login, String senha) {
+        this.id = id;
+        this.login = login;
+        this.senha = senha;
+        this.role = Role.USER;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.role == Role.ADMIN) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        }
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 

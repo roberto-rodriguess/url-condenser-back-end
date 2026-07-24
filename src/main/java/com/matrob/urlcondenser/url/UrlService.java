@@ -6,6 +6,7 @@ import com.matrob.urlcondenser.url.dto.UrlStatsDTO;
 import com.matrob.urlcondenser.infra.exception.DuplicateUrlException;
 import com.matrob.urlcondenser.infra.exception.UrlNotFoundException;
 import com.matrob.urlcondenser.infra.exception.UserUrlLimitExceededException;
+import com.matrob.urlcondenser.usuario.Role;
 import com.matrob.urlcondenser.usuario.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,9 @@ public class UrlService {
      * Retorna todas as URLs cadastradas para o usuário logado.
      */
     public List<Url> findAll(Usuario usuario) {
+        if (usuario.getRole() == Role.ADMIN) {
+            return repository.findAll();
+        }
         return repository.findAllByUsuario(usuario);
     }
 
@@ -61,7 +65,10 @@ public class UrlService {
      * Busca pelo ID e pelo usuário.
      */
     public Url findById(Long id, Usuario usuario) {
-
+        if (usuario.getRole() == Role.ADMIN) {
+            return repository.findById(id)
+                    .orElseThrow(() -> new UrlNotFoundException("URL não encontrada."));
+        }
         return repository.findByIdAndUsuario(id, usuario)
                 .orElseThrow(() ->
                         new UrlNotFoundException("URL não encontrada."));

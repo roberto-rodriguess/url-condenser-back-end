@@ -1,5 +1,6 @@
 package com.matrob.urlcondenser.url;
 
+import com.matrob.urlcondenser.url.dto.UrlListResponseDTO;
 import com.matrob.urlcondenser.url.dto.UrlResponseDTO;
 import com.matrob.urlcondenser.url.dto.UrlStatsDTO;
 import org.mapstruct.Mapper;
@@ -17,5 +18,9 @@ public abstract class UrlMapper {
     public abstract UrlResponseDTO toResponseDTO(Url url);
 
     public abstract UrlStatsDTO toStatsDTO(Url url);
+
+    @Mapping(target = "shortUrl", expression = "java(baseUrl + \"/\" + url.getShortCode())")
+    @Mapping(target = "criador", source = "usuario.login")
+    public abstract UrlListResponseDTO toListResponseDTO(Url url);
 
 }

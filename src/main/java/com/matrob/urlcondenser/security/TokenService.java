@@ -24,6 +24,7 @@ public class TokenService {
                     .withIssuer("API UrlCondenser")
                     .withSubject(usuario.getLogin())
                     .withClaim("id", usuario.getId())
+                    .withClaim("role", usuario.getRole().name())
                     .withExpiresAt(dataExpiracao())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
