@@ -1,0 +1,72 @@
+name: Build and Create Windows Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    name: Run Automated Tests
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run Maven Tests
+        run: ./mvnw clean test
+
+  build-windows:
+    runs-on: windows-latest
+    needs: run-tests
+    name: Build Native Image for Windows
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM JDK 21
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Native Windows Executable
+        run: .\mvnw.cmd -Pnative native:compile -DskipTests -Dnative.buildargs="-H:DeadlockWatchdogInterval=0"
+
+      - name: Upload Windows Binary Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-binary
+          path: target/urlcondenser.exe
+          if-no-files-found: error
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: build-windows
+    name: Create GitHub Release
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Windows Binary
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-binary
+          path: ./
+
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: urlcondenser.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
