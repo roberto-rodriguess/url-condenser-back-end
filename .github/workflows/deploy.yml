@@ -1,9 +1,8 @@
 name: Deploy GraalVM Native Image to Railway
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
   build-and-deploy:
