@@ -1,10 +1,16 @@
-name: Build and Create Windows Release
+name: Build, Release and Deploy
 
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Redeploy to Railway?'
+        required: true
+        type: boolean
+        default: true
 
 jobs:
   run-tests:
@@ -73,3 +79,59 @@ jobs:
           files: urlcondenser.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-railway:
+    runs-on: ubuntu-latest
+    needs: run-tests
+    if: github.event_name == 'push' || inputs.deploy
+    name: Deploy Linux Image to Railway
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM JDK 21
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build Native Linux Binary
+        run: ./mvnw -Pnative native:compile -DskipTests
+
+      - name: Downcase Repository Name
+        run: |
+          echo "IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Trigger Redeploy on Railway
+        run: railway redeploy --service 73ee020a-aa00-4129-ad4b-98839ad1025d -y
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
