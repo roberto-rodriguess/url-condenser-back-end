@@ -1,175 +1,138 @@
-# URL Condenser 🔗
+# URL Condenser API 🔗
 
-Sistema para encurtamento de URLs desenvolvido com **Java**, **Spring Boot**, **PostgreSQL** e **JavaScript**. O projeto permite criar URLs curtas, redirecionar para a URL original, consultar estatísticas de acesso e gerenciar links por meio de uma API REST documentada com **Swagger**.
+API REST de encurtamento de URLs segura, rápida e escalável, desenvolvida com **Java**, **Spring Boot 3.x** e **PostgreSQL**. O sistema conta com autenticação JWT, controle de acesso a links por usuário, logs de acessos em tempo real e compilação nativa com **GraalVM** pronta para conteinerização e deploy na nuvem.
 
 ---
 
-## Tecnologias Utilizadas 🧑‍💻
+## 🛠️ Tecnologias Utilizadas
 
-<div>
+<div align="left">
   <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white">
   <img src="https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white">
-  <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white">
-  <img src="https://img.shields.io/badge/Lombok-E62C2C?style=for-the-badge&logo=java&logoColor=white">
+  <img src="https://img.shields.io/badge/GraalVM-Native_Image-FE354B?style=for-the-badge&logo=graalvm&logoColor=white">
+  <img src="https://img.shields.io/badge/Flyway-CC0000?style=for-the-badge&logo=redhat&logoColor=white">
   <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black">
-  <img src="https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white">
-  <img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white">
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
 </div>
 
 ---
 
-## Funcionalidades 🚀
+## 🚀 Funcionalidades Principais
 
-- 🔗 Encurtamento de URLs.
-- 🌐 Redirecionamento automático para a URL original.
-- 📊 Consulta de estatísticas de acesso.
-- 🗑️ Exclusão de URLs cadastradas.
-- 📋 Listagem de todas as URLs cadastradas.
-- 📖 Documentação completa da API utilizando Swagger.
-- 💻 Interface web simples para consumo da API.
+- 👤 **Autenticação Segura:** Registro de usuários e login com geração de tokens JWT.
+- 🔗 **Encurtamento Inteligente:** Geração de códigos curtos de redirecionamento.
+- 🔒 **Controle de Dono:** Usuários autenticados gerenciam apenas suas próprias URLs.
+- 📊 **Estatísticas de Acesso:** Contagem automatizada de cliques e acessos.
+- 🔄 **Redirecionamento Rápido:** Redirecionamento HTTP 302 com tratamento para links inválidos integrado ao frontend.
+- 📚 **Documentação Interativa:** OpenAPI/Swagger integrado para testes rápidos.
+- ⚡ **Compilação Nativa:** Suporte total a builds GraalVM (inicialização instantânea e consumo mínimo de memória RAM).
 
 ---
 
-## Estrutura do Projeto 🗂️
+## 🗂️ Estrutura do Projeto
 
 ```text
-URL-Condenser
+url-condenser
 │
-├── backend
-│   ├── src/
-│   ├── pom.xml
-│   └── ...
+├── .github/workflows/   # Pipeline unificado de CI/CD (GitHub Actions)
+├── src/
+│   ├── main/
+│   │   ├── java/com/matrob/urlcondenser/
+│   │   │   ├── url/        # Domínio, Serviços e Endpoints de URLs
+│   │   │   ├── usuario/    # Registro, Login e Perfis de Usuários
+│   │   │   ├── infra/      # Tratamento global de erros e exceções
+│   │   │   └── security/   # Configuração de segurança e lógica JWT
+│   │   └── resources/
+│   │       ├── db/migration/  # Migrations do Flyway (PostgreSQL)
+│   │       └── application.properties
+│   └── test/               # Testes automatizados (H2 em memória)
 │
-├── frontend
-│   ├── index.html
-│   ├── style.css
-│   └── script.js
-│
+├── Dockerfile           # Imagem enxuta baseada em Debian
+├── pom.xml              # Gerenciador de Dependências Maven
 └── README.md
 ```
 
-### Backend
-
-- `controller/` → Endpoints REST.
-- `service/` → Regras de negócio.
-- `repository/` → Comunicação com o banco.
-- `domain/` → Entidade principal.
-- `dto/` → Objetos de transferência.
-- `mapper/` → Conversão entre entidade e DTO.
-- `config/` → Swagger e CORS.
-- `exception/` → Tratamento global de exceções.
-
-### Frontend
-
-- Interface construída em HTML, CSS e JavaScript puro.
-- Comunicação com a API utilizando Fetch API.
-- Consulta das URLs e estatísticas em tempo real.
-
 ---
 
-## Endpoints 📡
+## 📡 Endpoints da API
 
+### Autenticação (Pública)
 | Método | Endpoint | Descrição |
-|---------|----------|-----------|
-| POST | `/api/urls` | Cria uma URL curta |
-| GET | `/api/urls` | Lista todas as URLs |
-| GET | `/api/urls/{shortCode}` | Busca informações da URL |
-| GET | `/{shortCode}` | Redireciona para a URL original |
-| DELETE | `/api/urls/{shortCode}` | Remove uma URL |
-| GET | `/api/urls/{shortCode}/stats` | Consulta estatísticas |
+| :--- | :--- | :--- |
+| `POST` | `/register` | Registra um novo usuário no sistema |
+| `POST` | `/login` | Autentica um usuário e retorna o Token JWT |
+
+### Gerenciamento de URLs (Requer Cabeçalho `Authorization: Bearer <TOKEN>`)
+| Método | Endpoint | Descrição |
+| :--- | :--- | :--- |
+| `POST` | `/api/urls` | Encurta uma URL original |
+| `GET` | `/api/urls` | Lista todas as URLs cadastradas pelo usuário logado |
+| `GET` | `/api/urls/{id}` | Busca os detalhes de uma URL pelo seu ID numérico |
+| `GET` | `/api/urls/stats/{shortCode}` | Consulta estatísticas detalhadas de acessos |
+| `DELETE` | `/api/urls/{id}` | Exclui de forma permanente uma URL cadastrada |
+
+### Redirecionamento (Público)
+| Método | Endpoint | Descrição |
+| :--- | :--- | :--- |
+| `GET` | `/{shortCode}` | Redireciona o visitante para a URL original |
 
 ---
 
-## Documentação 📚
+## 📚 Documentação e Testes
 
-Após iniciar a aplicação, a documentação poderá ser acessada em:
-
+Após iniciar a aplicação localmente, você pode conferir e testar todos os endpoints interativamente através do Swagger UI em:
 ```text
 http://localhost:8080/swagger-ui/index.html
 ```
 
 ---
 
-## Tratamento de Erros 🧯
+## 🛠️ Requisitos de Sistema
 
-A API possui tratamento centralizado de exceções para:
-
-- 400 — Requisição inválida
-- 404 — URL não encontrada
-- 409 — URL duplicada
-- 500 — Erro interno do servidor
-
-Todas as respostas seguem um formato padronizado.
+- **Java Development Kit (JDK):** Versão 21 ou superior (preferencialmente GraalVM para builds nativos).
+- **Gerenciador de Build:** Maven 3.9+.
+- **Banco de Dados:** PostgreSQL 15+ (para desenvolvimento e produção) e banco H2 em memória (para testes automatizados).
 
 ---
 
-## Arquitetura ⚙️
+## 💻 Como Executar Localmente
 
-O projeto segue a arquitetura em camadas:
-
-```
-Controller
-     │
-Service
-     │
-Repository
-     │
-PostgreSQL
-```
-
-A comunicação externa ocorre através de DTOs, evitando exposição direta da entidade.
-
----
-
-## Requisitos 💼
-
-- Java 21+
-- Maven 3.9+
-- PostgreSQL 15+
-- IntelliJ IDEA ou VS Code
-
----
-
-## Como Executar 🚀
-
-### Clone o repositório
-
+### 1. Clonar o repositório
 ```bash
 git clone https://github.com/G0LDB3G/url-condenser.git
+cd url-condenser
 ```
 
-Entre na pasta:
+### 2. Configurar as Variáveis de Ambiente
+Crie as seguintes variáveis de ambiente na sua máquina ou configure diretamente no seu `application.properties`:
+* `SPRING_DATASOURCE_URL` (ex: `jdbc:postgresql://localhost:5432/urlcondenser`)
+* `SPRING_DATASOURCE_USERNAME` (ex: `postgres`)
+* `SPRING_DATASOURCE_PASSWORD` (ex: `sua_senha`)
+* `API_SECURITY_TOKEN_SECRET` (chave secreta para assinatura dos tokens JWT)
+* `FRONTEND_URL` (URL da aplicação frontend externa para onde links inválidos serão redirecionados)
 
-```bash
-cd url-condenser/backend
-```
-
-Configure o arquivo `application.properties`:
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/urlcondenser
-spring.datasource.username=postgres
-spring.datasource.password=sua_senha
-```
-
-Execute:
-
+### 3. Rodar em Modo de Desenvolvimento
 ```bash
 mvn spring-boot:run
 ```
 
----
-
-## Frontend 💻
-
-Abra o arquivo:
-
-```
-frontend/index.html
+### 4. Rodar os Testes Automatizados (H2)
+```bash
+mvn clean test
 ```
 
-ou utilize a extensão **Live Server** do VS Code.
-
 ---
+
+## 📦 Compilação Nativa e CI/CD
+
+Este projeto está pronto para ambientes de alta performance utilizando GraalVM Native Image:
+
+* **Compilação Local Windows (VS Native Tools Command Prompt):**
+  ```bash
+  mvn -Pnative native:compile -DskipTests "-Dnative.buildargs=-H:DeadlockWatchdogInterval=0"
+  ```
+* **Esteira Integrada GitHub Actions:**
+  - **Pull Requests:** Roda testes automatizados de segurança.
+  - **Pushes na branch `main`:** Faz o deploy do container Linux direto para o **Railway**.
+  - **Pushes de Tags (`v*`):** Roda os testes, compila o binário `.exe` para Windows nativo e lança uma **Release** com o arquivo anexado.
